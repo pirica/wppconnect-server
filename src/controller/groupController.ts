@@ -37,7 +37,7 @@ export async function getAllGroups(req: Request, res: Response) {
   try {
     const response = await req.client.getAllGroups();
 
-    return res.status(200).json({ status: 'success', response: response });
+    res.status(200).json({ status: 'success', response: response });
   } catch (e) {
     req.logger.error(e);
     res
@@ -83,7 +83,7 @@ export async function joinGroupByCode(req: Request, res: Response) {
   const { inviteCode } = req.body;
 
   if (!inviteCode)
-    return res.status(400).send({ message: 'Invitation Code is required' });
+    res.status(400).send({ message: 'Invitation Code is required' });
 
   try {
     await req.client.joinGroup(inviteCode);
@@ -163,7 +163,7 @@ export async function createGroup(req: Request, res: Response) {
       });
     }
 
-    return res.status(201).json({
+    res.status(201).json({
       status: 'success',
       response: {
         message: 'Group(s) created successfully',
@@ -173,7 +173,7 @@ export async function createGroup(req: Request, res: Response) {
     });
   } catch (e) {
     req.logger.error(e);
-    return res
+    res
       .status(500)
       .json({ status: 'error', message: 'Error creating group(s)', error: e });
   }
@@ -211,13 +211,13 @@ export async function leaveGroup(req: Request, res: Response) {
       await req.client.leaveGroup(group);
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       status: 'success',
       response: { messages: 'Você saiu do grupo com sucesso', group: groupId },
     });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Erro ao sair do(s) grupo(s)',
       error: e,
@@ -235,27 +235,6 @@ export async function getGroupMembers(req: Request, res: Response) {
      #swagger.parameters["session"] = {
       schema: 'NERDWHATS_AMERICA'
      }
-     #swagger.requestBody = {
-      required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            properties: {
-              groupId: { type: "string" }
-            },
-            required: ["groupId"]
-          },
-          examples: {
-            "Default": {
-              value: {
-                groupId: "<groupId>"
-              }
-            }
-          }
-        }
-      }
-    }
    */
   const { groupId } = req.params;
 
@@ -264,10 +243,10 @@ export async function getGroupMembers(req: Request, res: Response) {
     for (const group of groupToArray(groupId)) {
       response = await req.client.getGroupMembers(group);
     }
-    return res.status(200).json({ status: 'success', response: response });
+    res.status(200).json({ status: 'success', response: response });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error on get group members',
       error: e,
@@ -320,7 +299,7 @@ export async function addParticipant(req: Request, res: Response) {
       arrayGroups.push(response);
     }
 
-    return res.status(201).json({
+    res.status(201).json({
       status: 'success',
       response: {
         message: 'Addition to group attempted.',
@@ -331,7 +310,7 @@ export async function addParticipant(req: Request, res: Response) {
     });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error adding participant(s)',
       error: e,
@@ -376,7 +355,7 @@ export async function removeParticipant(req: Request, res: Response) {
   const { groupId, phone } = req.body;
 
   try {
-    let response = {};
+    let response: any = {};
     const arrayGroups: any = [];
 
     for (const group of groupToArray(groupId)) {
@@ -387,7 +366,7 @@ export async function removeParticipant(req: Request, res: Response) {
       arrayGroups.push(response);
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       status: 'success',
       response: {
         message: 'Participant(s) removed successfully',
@@ -397,7 +376,7 @@ export async function removeParticipant(req: Request, res: Response) {
     });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error removing participant(s)',
       error: e,
@@ -448,7 +427,7 @@ export async function promoteParticipant(req: Request, res: Response) {
       arrayGroups.push(group);
     }
 
-    return res.status(201).json({
+    res.status(201).json({
       status: 'success',
       response: {
         message: 'Successful promoted participant(s)',
@@ -458,7 +437,7 @@ export async function promoteParticipant(req: Request, res: Response) {
     });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error promoting participant(s)',
       error: e,
@@ -509,7 +488,7 @@ export async function demoteParticipant(req: Request, res: Response) {
       arrayGroups.push(group);
     }
 
-    return res.status(201).json({
+    res.status(201).json({
       status: 'success',
       response: {
         message: 'Admin of participant(s) revoked successfully',
@@ -519,7 +498,7 @@ export async function demoteParticipant(req: Request, res: Response) {
     });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: "Error revoking participant's admin(s)",
       error: e,
@@ -570,10 +549,10 @@ export async function getGroupAdmins(req: Request, res: Response) {
       arrayGroups.push(response);
     }
 
-    return res.status(200).json({ status: 'success', response: arrayGroups });
+    res.status(200).json({ status: 'success', response: arrayGroups });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error retrieving group admin(s)',
       error: e,
@@ -612,10 +591,10 @@ export async function getGroupInviteLink(req: Request, res: Response) {
       response = await req.client.getGroupInviteLink(group);
     }
 
-    return res.status(200).json({ status: 'success', response: response });
+    res.status(200).json({ status: 'success', response: response });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error on get group invite link',
       error: e,
@@ -656,13 +635,13 @@ export async function revokeGroupInviteLink(req: Request, res: Response) {
       response = await req.client.revokeGroupInviteLink(group);
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       status: 'Success',
       response: response,
     });
   } catch (e) {
     req.logger.error(e);
-    return res.status(400).json({
+    res.status(400).json({
       status: 'error',
       message: 'Error on revoke group invite link',
       error: e,
@@ -683,10 +662,10 @@ export async function getAllBroadcastList(req: Request, res: Response) {
    */
   try {
     const response = await req.client.getAllBroadcastList();
-    return res.status(200).json({ status: 'success', response: response });
+    res.status(200).json({ status: 'success', response: response });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error on get all broad cast list',
       error: e,
@@ -721,10 +700,10 @@ export async function getGroupInfoFromInviteLink(req: Request, res: Response) {
   try {
     const { invitecode } = req.body;
     const response = await req.client.getGroupInfoFromInviteLink(invitecode);
-    return res.status(200).json({ status: 'success', response: response });
+    res.status(200).json({ status: 'success', response: response });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error on get group info from invite link',
       error: e,
@@ -752,10 +731,10 @@ export async function getGroupMembersIds(req: Request, res: Response) {
     for (const group of groupToArray(groupId)) {
       response = await req.client.getGroupMembersIds(group);
     }
-    return res.status(200).json({ status: 'success', response: response });
+    res.status(200).json({ status: 'success', response: response });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error on get group members ids',
       error: e,
@@ -797,10 +776,10 @@ export async function setGroupDescription(req: Request, res: Response) {
       response = await req.client.setGroupDescription(group, description);
     }
 
-    return res.status(200).json({ status: 'success', response: response });
+    res.status(200).json({ status: 'success', response: response });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error on set group description',
       error: e,
@@ -843,10 +822,10 @@ export async function setGroupProperty(req: Request, res: Response) {
       response = await req.client.setGroupProperty(group, property, value);
     }
 
-    return res.status(200).json({ status: 'success', response: response });
+    res.status(200).json({ status: 'success', response: response });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error on set group property',
       error: e,
@@ -888,10 +867,10 @@ export async function setGroupSubject(req: Request, res: Response) {
       response = await req.client.setGroupSubject(group, title);
     }
 
-    return res.status(200).json({ status: 'success', response: response });
+    res.status(200).json({ status: 'success', response: response });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error on set group subject',
       error: e,
@@ -933,10 +912,10 @@ export async function setMessagesAdminsOnly(req: Request, res: Response) {
       response = await req.client.setMessagesAdminsOnly(group, value);
     }
 
-    return res.status(200).json({ status: 'success', response: response });
+    res.status(200).json({ status: 'success', response: response });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error on set messages admins only',
       error: e,
@@ -973,16 +952,20 @@ export async function changePrivacyGroup(req: Request, res: Response) {
 
   try {
     for (const group of contactToArray(groupId)) {
-      await req.client.setMessagesAdminsOnly(group, status === 'true');
+      await req.client.setGroupProperty(
+        group,
+        'restrict' as any,
+        status === 'true'
+      );
     }
 
-    return res.status(200).json({
+    res.status(200).json({
       status: 'success',
       response: { message: 'Group privacy changed successfully' },
     });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error changing group privacy',
       error: e,
@@ -1015,29 +998,56 @@ export async function setGroupProfilePic(req: Request, res: Response) {
       }
     }
    */
-  const { phone, path } = req.body;
+  const { groupId, path } = req.body;
 
   if (!path && !req.file)
-    return res.status(401).send({
+    res.status(401).send({
       message: 'Sending the image is mandatory',
     });
 
   const pathFile = path || req.file?.path;
 
   try {
-    for (const contato of contactToArray(phone, true)) {
-      await req.client.setGroupIcon(contato, pathFile);
+    for (const contact of contactToArray(groupId, true)) {
+      await req.client.setGroupIcon(contact, pathFile);
     }
 
-    return res.status(201).json({
+    res.status(201).json({
       status: 'success',
       response: { message: 'Group profile photo successfully changed' },
     });
   } catch (e) {
     req.logger.error(e);
-    return res.status(500).json({
+    res.status(500).json({
       status: 'error',
       message: 'Error changing group photo',
+      error: e,
+    });
+  }
+}
+
+export async function getCommonGroups(req: Request, res: Response) {
+  /**
+     #swagger.tags = ["Group"]
+     #swagger.autoBody=false
+     #swagger.security = [{
+            "bearerAuth": []
+     }]
+     #swagger.parameters["session"] = {
+      schema: 'NERDWHATS_AMERICA'
+     }
+     #swagger.parameters["wid"] = {
+      schema: '5521999999999@c.us'
+     }
+   */
+  const { wid } = req.params;
+  try {
+    res.status(200).json(await (req.client as any).getCommonGroups(wid));
+  } catch (e) {
+    req.logger.error(e);
+    res.status(500).json({
+      status: 'error',
+      message: 'Error on get common groups',
       error: e,
     });
   }
